@@ -1,4 +1,7 @@
-{
+let
+  defaultMountOptions = [ "compress-force=zstd" "noatime" ];
+  swapSize = "16G";
+in {
   disko.devices = {
     disk = {
 
@@ -23,29 +26,29 @@
             };
 
             root = {
-              end = "-16G";
+              end = "-" + swapSize;
               content = {
                 type = "btrfs";
                 extraArgs = [ "-f" ];
                 subvolumes = {
                   "@" = {
                     mountpoint = "/";
-                    mountOptions = [ "compress-force=zstd" "noatime" ];
+                    mountOptions = defaultMountOptions;
                   };
                   "@home" = {
                     mountpoint = "/home";
-                    mountOptions = [ "compress-force=zstd" "noatime" ];
+                    mountOptions = defaultMountOptions;
                   };
                   "@nix" = {
                     mountpoint = "/nix";
-                    mountOptions = [ "compress-force=zstd" "noatime" ];
+                    mountOptions = defaultMountOptions;
                   };
                 };
               };
             };
 
             swap = {
-              size = "16G";
+              size = swapSize;
               content = {
                 type = "swap";
                 discardPolicy = "both";
