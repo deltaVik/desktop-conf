@@ -81,7 +81,7 @@ in {
             };
             "@storage" = {
               mountpoint = "/storage";
-              mountOptions = defaultMountOptions ++ [ "gid=storage" "umask=0000" ];
+              mountOptions = defaultMountOptions ++ [ "umask=0000" ];
             };
           };
         };
