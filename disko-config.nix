@@ -3,7 +3,7 @@
 let
   mainDevice = "/dev/sda";
   storageDevice = "";
-  swapSize = [ "16G" ];
+  swapSize = "16G";
   defaultMountOptions = [ "compress-force=zstd" "noatime" "nodiratime" ];
 in {
   disko.devices = {
