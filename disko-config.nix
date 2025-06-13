@@ -1,12 +1,16 @@
+{ lib, ... }:
+
 let
-  defaultMountOptions = [ "compress-force=zstd" "noatime" ];
-  swapSize = "16G";
+  mainDevice = "/dev/sda";
+  storageDevice = "";
+  swapSize = [ "16G" ];
+  defaultMountOptions = [ "compress-force=zstd" "noatime" "nodiratime" ];
 in {
   disko.devices = {
     disk = {
 
-      primary = {
-        device = "/dev/sda";
+      main = {
+        device = mainDevice;
         type = "disk";
         content = {
           type = "gpt";
@@ -16,7 +20,7 @@ in {
               priority = 1;
               name = "ESP";
               type = "EF00";
-              size = "1G";
+              size = "512M";
               content = {
                 type = "filesystem";
                 format = "vfat";
@@ -25,8 +29,17 @@ in {
               };
             };
 
+            swap = {
+              size = swapSize;
+              content = {
+                type = "swap";
+                discardPolicy = "once";
+                resumeDevice = true;
+              };
+            };
+
             root = {
-              end = "-" + swapSize;
+              size = "100%";
               content = {
                 type = "btrfs";
                 extraArgs = [ "-f" ];
@@ -43,22 +56,37 @@ in {
                     mountpoint = "/nix";
                     mountOptions = defaultMountOptions;
                   };
+                  "@snapshots" = lib.optionalAttrs (storageDevice == "") {
+                    mountpoint = "/snapshots";
+                    mountOptions = defaultMountOptions;
+                  };
                 };
-              };
-            };
-
-            swap = {
-              size = swapSize;
-              content = {
-                type = "swap";
-                discardPolicy = "both";
-                resumeDevice = true;
               };
             };
 
           };
         };
       };
+
+      storage = lib.optionalAttrs (storageDevice != "") {
+        device = storageDevice;
+        type = "disk";
+        content = {
+          type = "btrfs";
+          extraArgs = [ "-f" ];
+          subvolumes = {
+            "@snapshots" = {
+              mountpoint = "/snapshots";
+              mountOptions = defaultMountOptions;
+            };
+            "@storage" = {
+              mountpoint = "/storage";
+              mountOptions = defaultMountOptions ++ [ "gid=storage" "umask=0000" ];
+            };
+          };
+        };
+      };
+      
     };
   };
 }
