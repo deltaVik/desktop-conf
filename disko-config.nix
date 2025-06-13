@@ -56,7 +56,7 @@ in {
                     mountpoint = "/nix";
                     mountOptions = defaultMountOptions;
                   };
-                  "@snapshots" = lib.optionalAttrs (storageDevice == "") {
+                  "@snapshots" = lib.mkIf (storageDevice == "") {
                     mountpoint = "/snapshots";
                     mountOptions = defaultMountOptions;
                   };
@@ -68,7 +68,7 @@ in {
         };
       };
 
-      storage = lib.optionalAttrs (storageDevice != "") {
+      storage = lib.mkIf (storageDevice != "") {
         device = storageDevice;
         type = "disk";
         content = {
