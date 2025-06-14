@@ -7,7 +7,7 @@ in {
     disk = {
 
       main = {
-        device = params.mainDevice;
+        device = params.disks.mainDevice;
         type = "disk";
         content = {
           type = "gpt";
@@ -27,7 +27,7 @@ in {
             };
 
             swap = {
-              size = params.swapSize;
+              size = params.disks.swapSize;
               content = {
                 type = "swap";
                 discardPolicy = "once";
@@ -43,19 +43,19 @@ in {
                 subvolumes = {
                   "@" = {
                     mountpoint = "/";
-                    mountOptions = params.defaultMountOptions;
+                    mountOptions = params.disks.defaultMountOptions;
                   };
                   "@home" = {
                     mountpoint = "/home";
-                    mountOptions = params.defaultMountOptions;
+                    mountOptions = params.disks.defaultMountOptions;
                   };
                   "@nix" = {
                     mountpoint = "/nix";
-                    mountOptions = params.defaultMountOptions;
+                    mountOptions = params.disks.defaultMountOptions;
                   };
-                  "@snapshots" = lib.mkIf (params.storageDevice == "") {
+                  "@snapshots" = lib.mkIf (params.disks.storageDevice == "") {
                     mountpoint = "/snapshots";
-                    mountOptions = params.defaultMountOptions;
+                    mountOptions = params.disks.defaultMountOptions;
                   };
                 };
               };
@@ -65,8 +65,8 @@ in {
         };
       };
 
-      storage = lib.mkIf (params.storageDevice != "") {
-        device = params.storageDevice;
+      storage = lib.mkIf (params.disks.storageDevice != "") {
+        device = params.disks.storageDevice;
         type = "disk";
         content = {
           type = "btrfs";
@@ -74,11 +74,11 @@ in {
           subvolumes = {
             "@snapshots" = {
               mountpoint = "/snapshots";
-              mountOptions = params.defaultMountOptions;
+              mountOptions = params.disks.defaultMountOptions;
             };
             "@storage" = {
               mountpoint = "/storage";
-              mountOptions = params.defaultMountOptions ++ [ "umask=0000" ];
+              mountOptions = params.disks.defaultMountOptions ++ [ "umask=0000" ];
             };
           };
         };
