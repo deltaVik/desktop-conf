@@ -26,7 +26,7 @@ in {
               };
             };
 
-            swap = {
+            swap = lib.mkIf (params.disks.swapSize != ""){
               size = params.disks.swapSize;
               content = {
                 type = "swap";
