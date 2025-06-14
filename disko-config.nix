@@ -1,16 +1,13 @@
 { lib, ... }:
 
 let
-  mainDevice = "/dev/sda";
-  storageDevice = "";
-  swapSize = "16G";
-  defaultMountOptions = [ "compress-force=zstd" "noatime" "nodiratime" ];
+  params = import "./user-params.nix";
 in {
   disko.devices = {
     disk = {
 
       main = {
-        device = mainDevice;
+        device = params.mainDevice;
         type = "disk";
         content = {
           type = "gpt";
@@ -30,7 +27,7 @@ in {
             };
 
             swap = {
-              size = swapSize;
+              size = params.swapSize;
               content = {
                 type = "swap";
                 discardPolicy = "once";
@@ -46,19 +43,19 @@ in {
                 subvolumes = {
                   "@" = {
                     mountpoint = "/";
-                    mountOptions = defaultMountOptions;
+                    mountOptions = params.defaultMountOptions;
                   };
                   "@home" = {
                     mountpoint = "/home";
-                    mountOptions = defaultMountOptions;
+                    mountOptions = params.defaultMountOptions;
                   };
                   "@nix" = {
                     mountpoint = "/nix";
-                    mountOptions = defaultMountOptions;
+                    mountOptions = params.defaultMountOptions;
                   };
-                  "@snapshots" = lib.mkIf (storageDevice == "") {
+                  "@snapshots" = lib.mkIf (params.storageDevice == "") {
                     mountpoint = "/snapshots";
-                    mountOptions = defaultMountOptions;
+                    mountOptions = params.defaultMountOptions;
                   };
                 };
               };
@@ -68,8 +65,8 @@ in {
         };
       };
 
-      storage = lib.mkIf (storageDevice != "") {
-        device = storageDevice;
+      storage = lib.mkIf (params.storageDevice != "") {
+        device = params.storageDevice;
         type = "disk";
         content = {
           type = "btrfs";
@@ -77,11 +74,11 @@ in {
           subvolumes = {
             "@snapshots" = {
               mountpoint = "/snapshots";
-              mountOptions = defaultMountOptions;
+              mountOptions = params.defaultMountOptions;
             };
             "@storage" = {
               mountpoint = "/storage";
-              mountOptions = defaultMountOptions ++ [ "umask=0000" ];
+              mountOptions = params.defaultMountOptions ++ [ "umask=0000" ];
             };
           };
         };
