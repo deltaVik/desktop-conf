@@ -1,7 +1,7 @@
 { lib, ... }:
 
 let
-  params = import "./user-params.nix";
+  params = import ./user-params.nix;
 in {
   disko.devices = {
     disk = {
