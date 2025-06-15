@@ -2,8 +2,11 @@
 
 let
   params = import ./user-params.nix;
+
 in {
-  disko.devices = {
+  disko.devices = if params.confirmation != true then
+    throw "Partitioning aborted. Please check 'confirmation' option in ./user-params.nix"
+  else {
     disk = {
 
       main = {

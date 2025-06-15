@@ -1,5 +1,10 @@
 {
-  # Disk partitioning options
+  # Please read and edit this config carefully before changing this option!
+  # Set "confirmation = true;" if you are confident that the configuration is correct
+  confirmation = false;
+
+  # Disk partitioning options.
+  # WARNING: all selected disks will be wiped!
   disks = {
 
     # Main disk device for EPS, root, /home and /nix (also /snapshots, if storageDevice is empty)
